@@ -5,9 +5,10 @@
                     <input :id="id" 
                             type="radio" 
                             name="answer"
-                            v-model="model"
                             :value="value"
                             :disabled="disabled"
+                            @change="onChange"
+                            v-model="model"
                             >
                     {{ value }}
                 </label>
@@ -22,6 +23,10 @@ const props = defineProps({
     value: String,
     correctAnswer: String
 })
+const emits = defineEmits(['change'])
+const onChange = (e) => {
+    emits('change', e)
+}
 const model = defineModel()
 const classes = computed(() => ({
     disabled: props.disabled,

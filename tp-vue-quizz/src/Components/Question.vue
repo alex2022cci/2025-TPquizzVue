@@ -8,26 +8,46 @@
                     :disabled="!hasAnswer"
                     :value="choice"
                     v-model="answer"
+                    @change="onAnswer"
                     :correctAnswer="question.correct_answer"
                 />
        
             </li>
         </ul>
         Votre réponse actuelle : {{ answer }}
-        <button :disabled="hasAnswer" @click="emit('answer', answer)">Question suivante</button>
+
+
     </div>
 </template>
 
 <script setup>
 import { shuffleArray } from '@/functions/array'
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import Answer from './Answer.vue'
 
 const props = defineProps({question: Object})
-const emit = defineEmits(['answer'])
+const emits = defineEmits(['answer'])
 const answer = ref(null)
 const hasAnswer = computed(() => answer.value === null)
 const randoChoices = computed(() => shuffleArray(props.question.choices))
+let timer 
+const onAnswer = () => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+        emits('answer', answer.value)
+    }, 1_500)
+}
+
+onMounted(() => {
+    timer = setTimeout(() => {
+        answer.value = ''
+        onAnswer()
+    }, 3_500)
+})
+onUnmounted(() => {
+    clearTimeout(timer)
+})
+
 </script>
 
 <style scoped>
@@ -47,4 +67,5 @@ const randoChoices = computed(() => shuffleArray(props.question.choices))
         margin-left: auto;
         display: block;
     }
+
 </style>
